@@ -79,33 +79,29 @@ with requests.session() as session:
                     has_sitemap,
                     cur_sitemap_val
                 ) = row
-                with session.get(
+                resp = session.get(
                     f"{base_url}/read/{asset_type}/{_id}",
                     headers=header
-                ) as resp:
-                    data = resp.json()
-                    if not ("asset" in data and asset_type in data["asset"]):
-                        warn(f"unable to parse the asset:{path} - cascade returned:{data}")
-                        continue
-                    asset = strip_cascade_object(data)
-                    # if it contains metadata field
-                    if "metadata" in asset and "dynamicFields" in asset["metadata"]:
-                        asset = set_sitemap_if_exists(asset)
-                        # extracts the sitemap value.
-                        # reference_value = [ field for field in asset["metadata"]["dynamicFields"] if field['name'] == "sitemap" ]
-                        payload = json.dumps({"asset":{asset_type : asset}})                      
-                        # uploads the changed asset.
-                        with session.post(
-                            f"{base_url}/edit",
-                            headers=header,
-                            data=payload
-                        ) as edit_response:
-                            #print(f"{path}")
-                            edit_status = edit_response.json()
-                            if "success" in edit_status and not edit_status["success"]:
-                                warn(f"{path} unsuccessful at updating. Return message:{edit_status["message"]}")
-                            else:
-                                print(f"successfully updated {path}")
+                )
+                data = resp.json()
+                if not ("asset" in data and asset_type in data["asset"]):
+                    warn(f"unable to parse the asset:{path} - cascade returned:{data}")
+                    continue
+                asset = strip_cascade_object(data)
+                # if it contains metadata field
+                if "metadata" in asset and "dynamicFields" in asset["metadata"]:
+                    asset = set_sitemap_if_exists(asset)
+                    payload = json.dumps({"asset":{asset_type : asset}})                      
+                    edit_response = session.post(
+                        f"{base_url}/edit",
+                        headers=header,
+                        data=payload
+                    )
+                    edit_status = edit_response.json()
+                    if "success" in edit_status and not edit_status["success"]:
+                        warn(f"{path} unsuccessful at updating. Return message:{edit_status["message"]}")
+                    else:
+                        print(f"successfully updated {path}")
             except requests.JSONDecodeError:
                 print(f"Request did not return a valid JSON format. (Most likely a HTML response)")
             except requests.RequestException:
