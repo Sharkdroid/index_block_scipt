@@ -105,7 +105,7 @@ try:
                         )
                         edit_status = edit_response.json()
                         if "success" in edit_status and not edit_status["success"]:
-                            log_file.write(f"Error: {path} unsuccessful at updating. Return message:{edit_status["message"]}\n")
+                            log_file.write(f"Error: {path} unsuccessful at updating. Return message:{edit_status['message']}\n")
                         else:
                             log_file.write(f"Successfully updated {path}")
                 except requests.JSONDecodeError:
