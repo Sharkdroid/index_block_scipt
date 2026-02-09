@@ -6,7 +6,7 @@ This script takes a CSV as input. The CSV contains the assets that have sitemap 
 ### Toolchain
 | programs| links |
 |--------|--------------------------|
-| Python | https://www.python.org/  (install anything above 3.12)|
+| Python | https://www.python.org/  (install >=3.12)|
 | VSCode | https://code.visualstudio.com/download (required for VSCode extension)|
 |Rainbow CSV|https://marketplace.visualstudio.com/items?itemName=mechatroner.rainbow-csv (for formatting csv files)|
 ### How to use
