@@ -8,9 +8,6 @@ from dotenv import load_dotenv
 from warnings import warn
 from datetime import datetime
 
-#logging
-log_file = open(f'./{datetime.now().isoformat()}.log', 'w')
-
 load_dotenv(".env")
 
 if getenv("api_key") is not None:
@@ -66,7 +63,6 @@ def set_sitemap_if_exists(asset: Dict[str, Any]) -> Dict[str, Any]:
     return asset
     
 try:
-    log_file.write(f"Running sitemap_setter.py @{datetime.now()}")
     print("Program running. This may take a few minutes...")
     with requests.session() as session:
         with open(sitemap_csv_file, 'r') as file:
@@ -91,13 +87,13 @@ try:
                     )
                     data = resp.json()
                     if not ("asset" in data and asset_type in data["asset"]):
-                        log_file.write(f"Error: unable to parse the asset:{path} - cascade returned:{data}\n")
+                        warn(f"Error: unable to parse the asset:{path} - cascade returned:{data}\n")
                         continue
                     asset = strip_cascade_object(data)
                     # if it contains metadata field
-                    if "metadata" in asset and "dynamicFields" in asset["metadata"]:
-                        asset = set_sitemap_if_exists(asset)
-                        payload = json.dumps({"asset":{asset_type : asset}})                      
+                    if None:
+                        """
+                        payload = json.dumps({"asset":{asset_type : asset}})    
                         edit_response = session.post(
                             f"{base_url}/edit",
                             headers=header,
@@ -105,9 +101,11 @@ try:
                         )
                         edit_status = edit_response.json()
                         if "success" in edit_status and not edit_status["success"]:
-                            log_file.write(f"Error: {path} unsuccessful at updating. Return message:{edit_status['message']}\n")
+                            print(f"Error: {path} unsuccessful at updating. Return message:{edit_status['message']}\n")
                         else:
-                            log_file.write(f"Successfully updated {path}")
+                            print(f"Successfully updated {path}")
+                        """
+                        
                 except requests.JSONDecodeError:
                     print(f"Request did not return a valid JSON format. (Most likely a HTML response)")
                 except requests.RequestException:
@@ -118,5 +116,4 @@ try:
                     print(f"Please fix the row {problem_path} it contains too many columns")
                     exit(1)
 finally:
-    log_file.close()
-    print("Cleanup")
+    print("CLEANUP")
